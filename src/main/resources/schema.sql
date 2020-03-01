@@ -1,78 +1,78 @@
-CREATE SEQUENCE BATCH_STEP_EXECUTION_SEQ;
-CREATE SEQUENCE BATCH_JOB_EXECUTION_SEQ;
-CREATE SEQUENCE BATCH_JOB_SEQ;
+create sequence batch_step_execution_seq;
+create sequence batch_job_execution_seq;
+create sequence batch_job_seq;
 
-CREATE TABLE BATCH_JOB_INSTANCE  (
-  JOB_INSTANCE_ID BIGINT  PRIMARY KEY ,
-  VERSION BIGINT,
-  JOB_NAME VARCHAR(100) NOT NULL ,
-  JOB_KEY VARCHAR(2500)
+create table batch_job_instance  (
+  job_instance_id bigint  primary key ,
+  version bigint,
+  job_name varchar(100) not null ,
+  job_key varchar(2500)
 );
 
-CREATE TABLE BATCH_JOB_EXECUTION  (
-  JOB_EXECUTION_ID BIGINT  PRIMARY KEY ,
-  VERSION BIGINT,
-  JOB_INSTANCE_ID BIGINT NOT NULL,
-  CREATE_TIME TIMESTAMP NOT NULL,
-  START_TIME TIMESTAMP DEFAULT NULL,
-  END_TIME TIMESTAMP DEFAULT NULL,
-  STATUS VARCHAR(10),
-  EXIT_CODE VARCHAR(20),
-  EXIT_MESSAGE VARCHAR(2500),
-  LAST_UPDATED TIMESTAMP,
-  JOB_CONFIGURATION_LOCATION VARCHAR(2500) NULL,
-  constraint JOB_INSTANCE_EXECUTION_FK foreign key (JOB_INSTANCE_ID)
-  references BATCH_JOB_INSTANCE(JOB_INSTANCE_ID)
+create table batch_job_execution  (
+  job_execution_id bigint  primary key ,
+  version bigint,
+  job_instance_id bigint not null,
+  create_time timestamp not null,
+  start_time timestamp default null,
+  end_time timestamp default null,
+  status varchar(10),
+  exit_code varchar(20),
+  exit_message varchar(2500),
+  last_updated timestamp,
+  job_configuration_location varchar(2500) null,
+  constraint job_instance_execution_fk foreign key (job_instance_id)
+  references batch_job_instance(job_instance_id)
 ) ;
 
-CREATE TABLE BATCH_JOB_EXECUTION_PARAMS  (
-	JOB_EXECUTION_ID BIGINT NOT NULL ,
-	TYPE_CD VARCHAR(6) NOT NULL ,
-	KEY_NAME VARCHAR(100) NOT NULL ,
-	STRING_VAL VARCHAR(250) ,
-	DATE_VAL DATETIME DEFAULT NULL ,
-	LONG_VAL BIGINT ,
-	DOUBLE_VAL DOUBLE PRECISION ,
-	IDENTIFYING CHAR(1) NOT NULL ,
-	constraint JOB_EXEC_PARAMS_FK foreign key (JOB_EXECUTION_ID)
-	references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+create table batch_job_execution_params  (
+	job_execution_id bigint not null ,
+	type_cd varchar(6) not null ,
+	key_name varchar(100) not null ,
+	string_val varchar(250) ,
+	date_val datetime default null ,
+	long_val bigint ,
+	double_val double precision ,
+	identifying char(1) not null ,
+	constraint job_exec_params_fk foreign key (job_execution_id)
+	references batch_job_execution(job_execution_id)
 );
 
-CREATE TABLE BATCH_STEP_EXECUTION  (
-  STEP_EXECUTION_ID BIGINT  PRIMARY KEY ,
-  VERSION BIGINT NOT NULL,
-  STEP_NAME VARCHAR(100) NOT NULL,
-  JOB_EXECUTION_ID BIGINT NOT NULL,
-  START_TIME TIMESTAMP NOT NULL ,
-  END_TIME TIMESTAMP DEFAULT NULL,
-  STATUS VARCHAR(10),
-  COMMIT_COUNT BIGINT ,
-  READ_COUNT BIGINT ,
-  FILTER_COUNT BIGINT ,
-  WRITE_COUNT BIGINT ,
-  READ_SKIP_COUNT BIGINT ,
-  WRITE_SKIP_COUNT BIGINT ,
-  PROCESS_SKIP_COUNT BIGINT ,
-  ROLLBACK_COUNT BIGINT ,
-  EXIT_CODE VARCHAR(20) ,
-  EXIT_MESSAGE VARCHAR(2500) ,
-  LAST_UPDATED TIMESTAMP,
-  constraint JOB_EXECUTION_STEP_FK foreign key (JOB_EXECUTION_ID)
-  references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+create table batch_step_execution  (
+  step_execution_id bigint  primary key ,
+  version bigint not null,
+  step_name varchar(100) not null,
+  job_execution_id bigint not null,
+  start_time timestamp not null ,
+  end_time timestamp default null,
+  status varchar(10),
+  commit_count bigint ,
+  read_count bigint ,
+  filter_count bigint ,
+  write_count bigint ,
+  read_skip_count bigint ,
+  write_skip_count bigint ,
+  process_skip_count bigint ,
+  rollback_count bigint ,
+  exit_code varchar(20) ,
+  exit_message varchar(2500) ,
+  last_updated timestamp,
+  constraint job_execution_step_fk foreign key (job_execution_id)
+  references batch_job_execution(job_execution_id)
 ) ;
 
-CREATE TABLE BATCH_JOB_EXECUTION_CONTEXT  (
-  JOB_EXECUTION_ID BIGINT PRIMARY KEY,
-  SHORT_CONTEXT VARCHAR(2500) NOT NULL,
-  SERIALIZED_CONTEXT CLOB,
-  constraint JOB_EXEC_CTX_FK foreign key (JOB_EXECUTION_ID)
-  references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+create table batch_job_execution_context  (
+  job_execution_id bigint primary key,
+  short_context varchar(2500) not null,
+  serialized_context clob,
+  constraint job_exec_ctx_fk foreign key (job_execution_id)
+  references batch_job_execution(job_execution_id)
 ) ;
 
-CREATE TABLE BATCH_STEP_EXECUTION_CONTEXT  (
-  STEP_EXECUTION_ID BIGINT PRIMARY KEY,
-  SHORT_CONTEXT VARCHAR(2500) NOT NULL,
-  SERIALIZED_CONTEXT CLOB,
-  constraint STEP_EXEC_CTX_FK foreign key (STEP_EXECUTION_ID)
-  references BATCH_STEP_EXECUTION(STEP_EXECUTION_ID)
+create table batch_step_execution_context  (
+  step_execution_id bigint primary key,
+  short_context varchar(2500) not null,
+  serialized_context clob,
+  constraint step_exec_ctx_fk foreign key (step_execution_id)
+  references batch_step_execution(step_execution_id)
 ) ;

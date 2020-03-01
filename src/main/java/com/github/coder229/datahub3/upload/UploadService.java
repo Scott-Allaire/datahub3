@@ -33,6 +33,7 @@ public class UploadService {
 
         Upload upload = new Upload();
         upload.setStorage(storage);
+        upload.setUploadStatus(UploadStatus.New);
         upload.setUploaded(ZonedDateTime.now(clock));
         return uploadRepository.save(upload);
     }

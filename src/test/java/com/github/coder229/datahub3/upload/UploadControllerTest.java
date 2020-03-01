@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -43,25 +44,30 @@ class UploadControllerTest {
 
     @Test
     public void uploadJson() throws Exception {
+        Instant instant = Instant.now();
         ObjectNode document = objectMapper.createObjectNode();
         document.put("tempf", 68.0);
-        document.put("epoch", Instant.now().toEpochMilli());
+        document.put("source", getClass().getSimpleName());
+        document.put("epoch", instant.toEpochMilli());
 
         String json = document.toString();
         System.out.println(json);
 
-        byte[] bytes = json.getBytes(Charset.forName("utf-8"));
+        byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 
+        //  @formatter:off
         mockMvc.perform(post("/upload")
                 .content(bytes)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString())
                 .header(HttpHeaders.CONTENT_LENGTH, bytes.length)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sensordata.json")
-        )
-                .andDo(print())
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sensordata.json"))
+            .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.storage.filename", equalTo("sensordata.json")))
                 .andExpect(jsonPath("$.storage.contentType", containsString(MediaType.APPLICATION_JSON.toString())))
                 .andExpect(jsonPath("$.storage.length", equalTo(bytes.length)));
+        //  @formatter:on
+
+        // TODO wait for job finish and assert that data is saved
     }
 }
